@@ -47,7 +47,7 @@ public class TestUtils {
      * 2. Remove test-method nodes whose "is-config" attribute value is "true". This removes things like beforeClass, afterClass, setUp etc.
      * 3. In each test-method node, append a unique number [1],[2],[3], etc. to each name attribute (If you use ALM, then this forces ALM to bring these in a separate tests, otherwise ALM will bring these in as different runs for the same test
      */
-    public static void removeConfigNodes(String inputFilePath) {
+    public static void removeConfigNodesFromTestNgResultsXML(String inputFilePath) {
 
         File f = new File(inputFilePath);
 
