@@ -18,7 +18,7 @@ target
 test-output/
 testng.out.xml
 bin/
-testng-config-free-results
+testng-config-free-results.xml
 output.xml
 
 # Node

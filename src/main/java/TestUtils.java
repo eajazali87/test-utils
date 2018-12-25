@@ -114,7 +114,6 @@ public class TestUtils {
             throw new RuntimeException(e);
         }
         try {
-            System.out.println(System.getProperty("user.dir") + "/output.xml");
             t.transform(new DOMSource(doc),
                 new StreamResult(new File(System.getProperty("user.dir") + "/testng-config-free-results.xml")));
         } catch (TransformerException e) {
