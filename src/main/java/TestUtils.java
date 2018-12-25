@@ -5,6 +5,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -13,21 +15,31 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-
 /**
  * @author Eajaz
- * Created on 4/18/17
+ * Created on 12/25/18
  */
 
 public class TestUtils {
 
-    protected static DocumentBuilder builder = null;
+    static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    static DocumentBuilder builder;
+
+    static {
+        try {
+            builder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
 
     protected static Document doc = null;
 
     protected static TransformerFactory tf = TransformerFactory.newInstance();
     protected static Transformer t = null;
 
+    public TestUtils() throws ParserConfigurationException {
+    }
 
     /**
      * The removeConfigNodes method implements an logic that does the below operations:
@@ -37,18 +49,21 @@ public class TestUtils {
      */
     public static void removeConfigNodes(String inputFilePath) {
 
+        File f = new File(inputFilePath);
+
+        if (f.exists()) {
+        } else {
+            System.out
+                .println("file not found, please check if your input file is in the correct path");
+            System.exit(1);
+        }
+
         try {
             doc = builder.parse(inputFilePath);
         } catch (SAXException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        File f = new File(inputFilePath);
-        if (f.exists()) {
-        } else {
-            System.out.println("file not found, please check if your input file is in the correct path");
-            System.exit(1);
         }
 
         NodeList testMethodNodeList = doc.getElementsByTagName("test-method"); //Mention the node
@@ -99,10 +114,12 @@ public class TestUtils {
             throw new RuntimeException(e);
         }
         try {
-            t.transform(new DOMSource(doc), new StreamResult(new File(System.getProperty("user.dir")+"output.xml")));
+            System.out.println(System.getProperty("user.dir") + "/output.xml");
+            t.transform(new DOMSource(doc),
+                new StreamResult(new File(System.getProperty("user.dir") + "/testng-config-free-results.xml")));
         } catch (TransformerException e) {
             throw new RuntimeException(e);
         }
     }
-
 }
+

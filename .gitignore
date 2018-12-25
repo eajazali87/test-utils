@@ -14,10 +14,12 @@
 
 # Maven
 log/
-target/
+target
 test-output/
 testng.out.xml
 bin/
+testng-config-free-results
+output.xml
 
 # Node
 node_modules
