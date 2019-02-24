@@ -11,6 +11,22 @@ There are n number of config nodes like _@BeforeMethod_, _@AfterMethod_ etc in a
 
 ```TestUtils.removeConfigNodesFromTestNgResultsXML("path_to_your_input_testng-results.xml_file");```
 
+**downloadZip**:
+
+This method will help to download a zip file from a remote location.
+
+**Usage**:
+
+```TestUtils.downloadZip("remoteZipLocation","location_to_download/file.zip",1024);```
+
+**unZipFolder**:
+
+This method will help to unzip a folder and extract all its contents
+
+**Usage**:
+
+```TestUtils.unZipFolder("path to the zip folder");```
+
 
 ## My site:
 https://sdeting.com/

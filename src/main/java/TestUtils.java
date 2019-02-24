@@ -11,8 +11,14 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 
 /**
@@ -42,10 +48,11 @@ public class TestUtils {
     }
 
     /**
-     * The removeConfigNodes method implements an logic that does the below operations:
-     * 1. Remove test-method nodes where status = "Skip"
-     * 2. Remove test-method nodes whose "is-config" attribute value is "true". This removes things like beforeClass, afterClass, setUp etc.
-     * 3. In each test-method node, append a unique number [1],[2],[3], etc. to each name attribute (If you use ALM, then this forces ALM to bring these in a separate tests, otherwise ALM will bring these in as different runs for the same test
+     * @param inputFilePath the location of the testng-results.xml file
+     * <p>The removeConfigNodes method implements an logic that does the below operations:
+     *      1. Remove test-method nodes where status = "Skip"
+     *      2. Remove test-method nodes whose "is-config" attribute value is "true". This removes things like beforeClass, afterClass, setUp etc.
+     *      3. In each test-method node, append a unique number [1],[2],[3], etc. to each name attribute (If you use ALM, then this forces ALM to bring these in a separate tests, otherwise ALM will bring these in as different runs for the same test</p>
      */
     public static void removeConfigNodesFromTestNgResultsXML(String inputFilePath) {
 
@@ -120,5 +127,74 @@ public class TestUtils {
             throw new RuntimeException(e);
         }
     }
-}
 
+    /**
+     * <p>Downloads a zip directory from a remote location</p>
+     * @param remoteZipLocation the remote location of the zip file, eg: http://publib.boulder.ibm.com/bpcsamp/monitoring/clipsAndTacks/download/ClipsAndTacksF1.zip
+     * @param inputZipFilePath will download the zip to the location specified, eg: http://url.com/file.zip
+     * @param bufferSize eg: set to 1024
+     * **/
+
+    public static void downloadZip(String remoteZipLocation, String inputZipFilePath, int bufferSize) throws IOException {
+        URL url = new URL(remoteZipLocation);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        InputStream inputStream = connection.getInputStream();
+        OutputStream outputStream = new FileOutputStream(inputZipFilePath);
+
+        byte[] buf = new byte[bufferSize];
+        int n = inputStream.read(buf);
+        while (n >= 0) {
+            outputStream.write(buf, 0, n);
+            n = inputStream.read(buf);
+        }
+        outputStream.flush();
+    }
+
+    /**
+     * <p>Unzips a directory and extract all of its contents</p>
+     * @param inputZipFilePath path to the zip folder
+     *
+     * **/
+
+    public static void unzipFolder(String inputZipFilePath){
+        try {
+            ZipFile zipFile = new ZipFile(inputZipFilePath);
+            Enumeration<?> enu = zipFile.entries();
+            while (enu.hasMoreElements()) {
+                ZipEntry zipEntry = (ZipEntry) enu.nextElement();
+
+                String name = zipEntry.getName();
+                long size = zipEntry.getSize();
+                long compressedSize = zipEntry.getCompressedSize();
+                System.out.printf("name: %-20s | size: %6d | compressed size: %6d\n",
+                    name, size, compressedSize);
+
+                File file = new File(name);
+                if (name.endsWith("/")) {
+                    file.mkdirs();
+                    continue;
+                }
+
+                File parent = file.getParentFile();
+                if (parent != null) {
+                    parent.mkdirs();
+                }
+
+                InputStream is = zipFile.getInputStream(zipEntry);
+                FileOutputStream fos = new FileOutputStream(file);
+                byte[] bytes = new byte[1024];
+                int length;
+                while ((length = is.read(bytes)) >= 0) {
+                    fos.write(bytes, 0, length);
+                }
+                is.close();
+                fos.close();
+
+            }
+            zipFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
