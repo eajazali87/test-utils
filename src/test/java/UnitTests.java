@@ -4,7 +4,7 @@ import java.io.*;
 
 public class UnitTests {
 
-    //@Test
+    @Test
     public void removeConfigNodesTest(){
         TestUtils.removeConfigNodesFromTestNgResultsXML(System.getProperty("user.dir")+"/src/test/TestData/testng-results.xml");
     }
@@ -18,7 +18,7 @@ public class UnitTests {
 
     @Test
     public void unzipFolderTest(){
-        String zipFilePath=System.getProperty("user.dir")+"/ClipsAndTacksF1.zip";
+        String zipFilePath=System.getProperty("user.dir")+"/src/test/TestData/ClipsAndTacksF1.zip";
         TestUtils.unzipFolder(zipFilePath);
     }
 }
